@@ -1,0 +1,2 @@
+all_hosts=['localhost']
+fabfile=~/.fabric/fab_tasks.py
