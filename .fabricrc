@@ -1,5 +1,1 @@
-all_hosts=['localhost']
-host='localhost'
 fabfile=~/.fabric/fab_tasks.py
-password='TtYRx@123'
-user=root

@@ -8,6 +8,7 @@ alias dm='cd /home/dmalik5/'
 alias fb='cd /home/customer_django_project/giftwrapcompany.com/'
 alias latest='cd /download/blender/latest/'
 alias r='python manage.py runserver 192.168.1.101:8002'
+alias djtemplates='cd /home/dmalik5/django-dev'
 
 
 # Source global definitions
@@ -24,3 +25,4 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 #### Fusionbox Project setting ###
 export FB='/home/customer_django_project/giftwrapcompany.com/'
+export DJTEMPLATE='/home/dmalik5/django-dev'

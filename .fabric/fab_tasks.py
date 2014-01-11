@@ -1,5 +1,56 @@
-from fabric.api import local, task
+from fabric.api import local, task, hosts, cd, run, prefix, lcd
 from fabric.colors import red, green
+from fabric.api import env
+from utils import djangotasks
+
+with open('.env') as f:
+    env.password = f.readline().strip()
+
+# To-do
+#   Add the deployment setting with django project
+#   static/media files management
+# backup planning for fabric script
+
+
+REMOTE_PROJECT = {
+    'deepakmalik': {
+        'server': '',   # Deployment server
+        'port': '',     # Deployment ssh port number
+        'ssh_user': '',  # ssh user name
+        'project_path': '/home/openerpi/public_html/deepakmalik.in/',
+        'django_project_path': '/home/openerpi/public_html/deepakmalik.in/deepakmalik/',
+        'domain': 'deepakmalik.in',
+        'env': '/home/openerpi/.virtualenv/',
+        'git': 'git@bitbucket.org:dmalikcs/deepakmalik.in.git',
+        'branch': 'vps',
+        'requirement': 'requirements.txt'
+    },
+    'openerp': {
+        'server': '',   # Deployment server
+        'port': '',     # Deployment ssh port number
+        'ssh_user': '',  # ssh user name
+        'project_path': '/home/openerpi/public_html/openerp.in/',
+        'django_project_path': '/home/openerpi/public_html/openerp.in/openerp/',
+        'domain': 'openerp.in',
+        'env': '/home/openerpi/.virtualenv/',
+        'git': 'git@bitbucket.org:dmalikcs/openerp.git',
+        'branch': 'live',
+        'requirement': 'requirements.txt'
+    },
+    'krunksystems': {
+        'server': '',   # Deployment server
+        'port': '',     # Deployment ssh port number
+        'ssh_user': '',  # ssh user name
+        'project_path': '/home/openerpi/public_html/krunksystems.com/',
+        'django_project_path': '/home/openerpi/public_html/krunksystems.com/krunksystems/',
+        'domain': 'krunksystems.com',
+        'env': '/home/openerpi/.virtualenv/',
+        'git': 'git@bitbucket.org:dmalikcs/krunksystems.git',
+        'branch': 'live',
+        'requirement': 'requirements.txt'
+    },
+}
+
 
 @task
 def djp_setup(project_name, destination=None):
@@ -12,6 +63,7 @@ def djp_setup(project_name, destination=None):
     local("django-admin.py startproject --template=%s  %s %s" % (template, project_name, destination))
     print("Project created" + green("successfully"))
     local("git init %s" % destination)
+
 
 @task
 def installapp(app_name=None, app_type=None):
@@ -26,3 +78,36 @@ def installapp(app_name=None, app_type=None):
     else:
         template = 'https://github.com/dmalikcs/django-app-template/archive/master.zip'
     local("python manage.py startapp --template=%s %s" % (template, app_name, ))
+
+
+@task
+@hosts('openerpi@199.195.119.66:7822')
+def update(project_name):
+    project = REMOTE_PROJECT.get(project_name)
+    with cd(project.get('django_project_path')):
+        run("git pull origin %s" % project.get('branch'))
+
+
+@task
+@hosts('openerpi@199.195.119.66:7822')
+def deploy(project_name):
+    project = REMOTE_PROJECT.get(project_name)
+    with cd(project.get('env')):
+        run("virtualenv -p /usr/bin/python2.6 %s" % project_name)
+    # validate Project path exists & clone git ptoject
+    with cd(project.get('project_path')):
+        run("git clone -b %s %s" % (project.get('branch'), project.get('git')))
+    # syncdb &  migration
+    with prefix("source %s/%s/bin/activate" % (project.get('env'), project_name)), cd(project.get('django_project_path')):
+        run("pip install -r %s" % project.get('requirement'))
+        run("python manage.py syncdb --migrate")
+        run("fab setup")
+
+
+@task
+@hosts('openerpi@199.195.119.66:7822')
+def install_requirment(project_name):
+    project = REMOTE_PROJECT.get(project_name)
+    with prefix("source %s/%s/bin/activate" % (project.get('env'), project_name)), cd(project.get('django_project_path')):
+        run("pip install -r %s" % project.get('requirement'))
+        run("python manage.py syncdb --migrate")
