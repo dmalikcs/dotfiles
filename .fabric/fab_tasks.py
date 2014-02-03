@@ -57,9 +57,10 @@ REMOTE_PROJECT = {
 @task
 def djp_setup(project_name, destination=None):
     '''
-    Django project setup with default templates from Django
+    djp_setup: Django project setup
+
     syntax:
-        fab djp_name:project_name=""
+        fab djp_setup:project_name=""
     '''
     destination = "/home/customer_django_project/projects/%s/" % project_name
     template = 'https://github.com/dmalikcs/django-project-template/archive/master.zip'
