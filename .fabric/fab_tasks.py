@@ -2,9 +2,11 @@ from fabric.api import local, task, hosts, cd, run, prefix, lcd
 from fabric.colors import red, green
 from fabric.api import env
 from utils import djangotasks
+import os
 
-with open('.env') as f:
-    env.password = f.readline().strip()
+#with open('.env') as f:
+#    env.password = f.readline().strip()
+env.password = "Temp@Systems123"
 
 # To-do
 #   Add the deployment setting with django project
@@ -56,6 +58,8 @@ REMOTE_PROJECT = {
 def djp_setup(project_name, destination=None):
     '''
     Django project setup with default templates from Django
+    syntax:
+        fab djp_name:project_name=""
     '''
     destination = "/home/customer_django_project/projects/%s/" % project_name
     template = 'https://github.com/dmalikcs/django-project-template/archive/master.zip'
@@ -82,10 +86,13 @@ def installapp(app_name=None, app_type=None):
 
 @task
 @hosts('openerpi@199.195.119.66:7822')
-def update(project_name):
+def update():
+    project_name = os.environ['PROJECT_NAME']
     project = REMOTE_PROJECT.get(project_name)
-    with cd(project.get('django_project_path')):
+    with prefix("source %s/%s/bin/activate" % (project.get('env'), project_name)), cd(project.get('django_project_path')):
         run("git pull origin %s" % project.get('branch'))
+        run("python manage.py syncdb --migrate")
+        run("touch ./tmp/restart.txt")
 
 
 @task

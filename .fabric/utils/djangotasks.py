@@ -34,15 +34,7 @@ def create_pkg(app_name):
     with lcd(name):
         for file in files:
             setup['filename'] = file
-            local("sed -i\
-                  -e 's/{{ name }}/%(name)s/g'\
-                  -e 's/{{ version }}/%(version)s/g'\
-                  -e 's/{{ packages }}/%(packages)s/g'\
-                  -e 's/{{ description }}/%(description)s/g'\
-                  -e 's/{{ url }}/%(url)s/g'\
-                  -e 's/{{ author }}/%(author)s/g'\
-                  -e 's/{{ author_email }}/%(author_email)s/g'\
-                  %(filename)s" % setup)
+            local("sed -i -e 's/{{ name }}/%(name)s/g' -e 's/{{ version }}/%(version)s/g' -e 's/{{ packages }}/%(packages)s/g' -e 's/{{ description }}/%(description)s/g' -e 's/{{ url }}/%(url)s/g' -e 's/{{ author }}/%(author)s/g' -e 's/{{ author_email }}/%(author_email)s/g' %(filename)s" % setup)
     local("cp -rf %(packages)s %(name)s" % setup)
     with lcd(name):
         local("python setup.py sdist")
