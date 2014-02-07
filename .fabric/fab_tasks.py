@@ -62,7 +62,8 @@ def djp_setup(project_name, destination=None):
     syntax:
         fab djp_setup:project_name=""
     '''
-    destination = "/home/customer_django_project/projects/%s/" % project_name
+    HOME = os.environ['HOME']
+    destination = "%s/projects/%s/" % (HOME, project_name)
     template = 'https://github.com/dmalikcs/django-project-template/archive/master.zip'
     #local("mkdir %s" % destination)
     local("django-admin.py startproject --template=%s  %s %s" % (template, project_name, destination))

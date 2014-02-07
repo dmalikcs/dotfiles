@@ -12,6 +12,12 @@ APP_TEMPLATE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templat
 
 @task
 def create_pkg(app_name):
+    """
+    syntax
+
+    #fab djangotasks.create_pkg:app_name='Application'
+
+    """
     files = ['README.rst', 'setup.py', 'MANIFEST.in']
     name = raw_input("Package name:")
     version = raw_input("Version:")
