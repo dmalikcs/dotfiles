@@ -6,7 +6,7 @@ import os
 
 #with open('.env') as f:
 #    env.password = f.readline().strip()
-env.password = "Temp@Systems123"
+env.password = ""
 
 # To-do
 #   Add the deployment setting with django project
