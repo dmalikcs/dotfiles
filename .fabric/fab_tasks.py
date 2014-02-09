@@ -51,6 +51,18 @@ REMOTE_PROJECT = {
         'branch': 'live',
         'requirement': 'requirements.txt'
     },
+    'powerbazaar': {
+        'server': '',   # Deployment server
+        'port': '',     # Deployment ssh port number
+        'ssh_user': '',  # ssh user name
+        'project_path': '/home/openerpi/public_html/powerbazaar.in/',
+        'django_project_path': '/home/openerpi/public_html/powerbazaar.in/powerbazaar/',
+        'domain': 'powerbazaar.in',
+        'env': '/home/openerpi/.virtualenv/',
+        'git': 'git@bitbucket.org:dmalikcs/powerbazaar.git',
+        'branch': 'master',
+        'requirement': 'requirements.txt'
+    },
 }
 
 
@@ -109,7 +121,8 @@ def deploy(project_name):
     # syncdb &  migration
     with prefix("source %s/%s/bin/activate" % (project.get('env'), project_name)), cd(project.get('django_project_path')):
         run("pip install -r %s" % project.get('requirement'))
-        run("python manage.py syncdb --migrate")
+        run("python manage.py syncdb")
+        run("python manage.py migrate")
         run("fab setup")
 
 
